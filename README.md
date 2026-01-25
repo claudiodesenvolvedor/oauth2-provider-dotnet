@@ -33,3 +33,4 @@ The following settings are required in configuration:
 - `Jwt:KeyId` (must match the `kid` used for JWKS)
 
 Do not store private/public key material in this repository.
+
