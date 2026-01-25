@@ -1,36 +1,36 @@
-# OAuth2 Authorization Server (Internal)
+# OAuth2 Authorization Server (Interno)
 
-## RSA keys and JWKS (RS256)
+## Chaves RSA e JWKS (RS256)
 
-### Generate RSA key pair
+### Gerar par de chaves RSA
 
-Use the provided PowerShell script to generate a private/public key pair outside the repository:
+Utilize o script PowerShell fornecido para gerar um par de chaves privada/pública fora do repositório:
 
 ```
 .\tools\generate-rsa-keys.ps1 -OutputDir "C:\keys\oauth2"
 ```
 
-The script will create `private.pem` and `public.pem` in the specified folder and output a `kid` value.
+O script criará os arquivos `private.pem` e `public.pem` no diretório especificado e retornará um valor de `kid`.
 
-### Configure key storage (no secrets in repo)
+### Configurar armazenamento das chaves (sem segredos no repositório)
 
-Set one of the following options:
+Defina uma das opções abaixo:
 
-- File paths:
+**Via caminho de arquivo:**
   - `JWT_PRIVATE_KEY_PATH`
   - `JWT_PUBLIC_KEY_PATH`
-- PEM strings (recommended only with secret manager):
+- Strings PEM (recomendado apenas com secret manager):
   - `JWT_PRIVATE_KEY_PEM`
   - `JWT_PUBLIC_KEY_PEM`
 
-### Required JwtSettings
+### Configurações obrigatórias (JwtSettings)
 
-The following settings are required in configuration:
+As seguintes configurações são obrigatórias:
 
 - `Jwt:Issuer`
 - `Jwt:Audience`
 - `Jwt:AccessTokenMinutes`
-- `Jwt:KeyId` (must match the `kid` used for JWKS)
+- `Jwt:KeyId` (deve corresponder ao `kid` publicado no JWKS)
 
-Do not store private/public key material in this repository.
+⚠️ Nunca armazene chaves privadas ou públicas neste repositório.
 
