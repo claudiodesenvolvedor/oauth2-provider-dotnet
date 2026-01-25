@@ -6,4 +6,5 @@ public sealed record TokenRequest(
     string? ClientSecret,
     string? Scope,
     string? Code,
-    string? RedirectUri);
+    string? RedirectUri,
+    string? RefreshToken);

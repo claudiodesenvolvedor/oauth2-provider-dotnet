@@ -62,6 +62,16 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
             }
 
             services.AddSingleton<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
+
+            var refreshDescriptor = services
+                .SingleOrDefault(d => d.ServiceType == typeof(IRefreshTokenStore));
+
+            if (refreshDescriptor is not null)
+            {
+                services.Remove(refreshDescriptor);
+            }
+
+            services.AddSingleton<IRefreshTokenStore, InMemoryRefreshTokenStore>();
         });
     }
 }

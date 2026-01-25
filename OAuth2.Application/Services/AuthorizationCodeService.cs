@@ -13,17 +13,20 @@ public sealed class AuthorizationCodeService : IAuthorizationCodeService
     private readonly IAuthorizationCodeStore _codeStore;
     private readonly ITokenService _tokenService;
     private readonly IAccessTokenLifetimeProvider _tokenLifetimeProvider;
+    private readonly IRefreshTokenService _refreshTokenService;
 
     public AuthorizationCodeService(
         IClientStore clientStore,
         IAuthorizationCodeStore codeStore,
         ITokenService tokenService,
-        IAccessTokenLifetimeProvider tokenLifetimeProvider)
+        IAccessTokenLifetimeProvider tokenLifetimeProvider,
+        IRefreshTokenService refreshTokenService)
     {
         _clientStore = clientStore;
         _codeStore = codeStore;
         _tokenService = tokenService;
         _tokenLifetimeProvider = tokenLifetimeProvider;
+        _refreshTokenService = refreshTokenService;
     }
 
     public Task<AuthorizationCodeResponse> CreateCodeAsync(
@@ -133,11 +136,18 @@ public sealed class AuthorizationCodeService : IAuthorizationCodeService
             code.Scopes,
             expiresAt);
 
+        var refreshToken = await _refreshTokenService.CreateAsync(
+            code.ClientId,
+            code.Subject,
+            code.Scopes,
+            cancellationToken);
+
         return new AuthorizationCodeTokenResponse(
             token,
             "Bearer",
             (int)TimeSpan.FromMinutes(_tokenLifetimeProvider.GetAccessTokenMinutes()).TotalSeconds,
-            code.Scopes.Count > 0 ? string.Join(' ', code.Scopes) : null);
+            code.Scopes.Count > 0 ? string.Join(' ', code.Scopes) : null,
+            refreshToken);
     }
 
     private static IReadOnlyList<string> ResolveScopes(string? scope)

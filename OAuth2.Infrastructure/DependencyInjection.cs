@@ -37,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IMongoCollectionProvider, MongoCollectionProvider>();
 
         services.AddScoped<IAuthorizationCodeStore, MongoAuthorizationCodeStore>();
+        services.AddScoped<IRefreshTokenStore, MongoRefreshTokenStore>();
         services.AddScoped<IScopeProvider, ScopeProvider>();
         services.AddScoped<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 

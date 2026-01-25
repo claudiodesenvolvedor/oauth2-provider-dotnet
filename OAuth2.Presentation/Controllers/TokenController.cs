@@ -11,13 +11,16 @@ public sealed class TokenController : ControllerBase
 {
     private readonly IClientCredentialsService _clientCredentialsService;
     private readonly IAuthorizationCodeService _authorizationCodeService;
+    private readonly IRefreshTokenService _refreshTokenService;
 
     public TokenController(
         IClientCredentialsService clientCredentialsService,
-        IAuthorizationCodeService authorizationCodeService)
+        IAuthorizationCodeService authorizationCodeService,
+        IRefreshTokenService refreshTokenService)
     {
         _clientCredentialsService = clientCredentialsService;
         _authorizationCodeService = authorizationCodeService;
+        _refreshTokenService = refreshTokenService;
     }
 
     [HttpPost("token")]
@@ -35,6 +38,7 @@ public sealed class TokenController : ControllerBase
             var scope = ResolveOptionalValue(request.Scope, "scope");
             var code = ResolveOptionalValue(request.Code, "code");
             var redirectUri = ResolveOptionalValue(request.RedirectUri, "redirect_uri");
+        var refreshToken = ResolveOptionalValue(request.RefreshToken, "refresh_token");
 
             if (grantType == "client_credentials")
             {
@@ -51,7 +55,8 @@ public sealed class TokenController : ControllerBase
                     response.AccessToken,
                     response.TokenType,
                     response.ExpiresIn,
-                    response.Scope);
+                    response.Scope,
+                    null);
             }
 
             if (grantType == "authorization_code")
@@ -69,7 +74,26 @@ public sealed class TokenController : ControllerBase
                     response.AccessToken,
                     response.TokenType,
                     response.ExpiresIn,
-                    response.Scope);
+                    response.Scope,
+                    response.RefreshToken);
+            }
+
+            if (grantType == "refresh_token")
+            {
+                var refreshRequest = new RefreshTokenRequest(
+                    clientId,
+                    clientSecret,
+                    refreshToken ?? string.Empty);
+
+                var response = await _refreshTokenService
+                    .ExchangeAsync(refreshRequest, cancellationToken);
+
+                return new TokenResponse(
+                    response.AccessToken,
+                    response.TokenType,
+                    response.ExpiresIn,
+                    response.Scope,
+                    response.RefreshToken);
             }
 
             return BadRequest(new ErrorResponse("invalid_grant", "Unsupported grant_type."));
