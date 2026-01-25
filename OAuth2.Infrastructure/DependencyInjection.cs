@@ -30,12 +30,13 @@ public static class DependencyInjection
         services.AddScoped<IClientRepository, ClientRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
 
-        services.AddScoped<IClientStore, InMemoryClientStore>();
+        services.AddScoped<IClientStore, MongoClientStore>();
 
+        services.AddSingleton<IMongoDatabaseProvider, MongoDatabaseProvider>();
         services.AddScoped<IMongoDbContext, MongoDbContext>();
         services.AddScoped<IMongoCollectionProvider, MongoCollectionProvider>();
 
-        services.AddSingleton<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
+        services.AddScoped<IAuthorizationCodeStore, MongoAuthorizationCodeStore>();
         services.AddScoped<IScopeProvider, ScopeProvider>();
         services.AddScoped<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 

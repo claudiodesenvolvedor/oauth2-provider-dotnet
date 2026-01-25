@@ -2,6 +2,11 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using OAuth2.Application.Interfaces.Auth;
+using OAuth2.Application.Authorization;
+using OAuth2.Infrastructure.Auth;
+using OAuth2.Infrastructure.Authorization;
 
 namespace OAuth2.Tests.Infrastructure;
 
@@ -34,6 +39,29 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
             };
 
             config.AddInMemoryCollection(settings);
+        });
+
+        builder.ConfigureServices(services =>
+        {
+            var descriptor = services
+                .SingleOrDefault(d => d.ServiceType == typeof(IClientStore));
+
+            if (descriptor is not null)
+            {
+                services.Remove(descriptor);
+            }
+
+            services.AddScoped<IClientStore, InMemoryClientStore>();
+
+            var codeDescriptor = services
+                .SingleOrDefault(d => d.ServiceType == typeof(IAuthorizationCodeStore));
+
+            if (codeDescriptor is not null)
+            {
+                services.Remove(codeDescriptor);
+            }
+
+            services.AddSingleton<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
         });
     }
 }
