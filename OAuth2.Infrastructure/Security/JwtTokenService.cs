@@ -1,7 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
+using OAuth2.Application.Interfaces.Security;
 using OAuth2.Application.Interfaces.Services;
 using OAuth2.Infrastructure.Settings;
 
@@ -10,10 +11,14 @@ namespace OAuth2.Infrastructure.Security;
 public sealed class JwtTokenService : ITokenService
 {
     private readonly JwtSettings _jwtSettings;
+    private readonly IRsaKeyProvider _rsaKeyProvider;
 
-    public JwtTokenService(IOptions<JwtSettings> jwtOptions)
+    public JwtTokenService(
+        IOptions<JwtSettings> jwtOptions,
+        IRsaKeyProvider rsaKeyProvider)
     {
         _jwtSettings = jwtOptions.Value;
+        _rsaKeyProvider = rsaKeyProvider;
     }
 
     public string GenerateAccessToken(
@@ -21,14 +26,10 @@ public sealed class JwtTokenService : ITokenService
         IReadOnlyList<string> scopes,
         DateTimeOffset expiresAt)
     {
-        var keyId = _jwtSettings.KeyId;
-        if (string.IsNullOrWhiteSpace(keyId))
+        var signingKey = new RsaSecurityKey(_rsaKeyProvider.GetPrivateKey())
         {
-            throw new InvalidOperationException("Jwt:KeyId is required.");
-        }
-
-        using var rsa = RsaKeyLoader.LoadPrivateKey();
-        var signingKey = new RsaSecurityKey(rsa) { KeyId = keyId };
+            KeyId = _rsaKeyProvider.GetKeyId()
+        };
 
         var now = DateTimeOffset.UtcNow;
         var claims = new List<Claim>

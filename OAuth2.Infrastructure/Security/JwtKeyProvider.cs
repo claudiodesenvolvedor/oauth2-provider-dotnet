@@ -1,30 +1,21 @@
-using System.Security.Cryptography;
-using Microsoft.Extensions.Options;
 using OAuth2.Application.DTOs.Security;
 using OAuth2.Application.Interfaces.Security;
-using OAuth2.Infrastructure.Settings;
 
 namespace OAuth2.Infrastructure.Security;
 
 public sealed class JwtKeyProvider : IJwtKeyProvider
 {
-    private readonly JwtSettings _jwtSettings;
+    private readonly IRsaKeyProvider _rsaKeyProvider;
 
-    public JwtKeyProvider(IOptions<JwtSettings> jwtOptions)
+    public JwtKeyProvider(IRsaKeyProvider rsaKeyProvider)
     {
-        _jwtSettings = jwtOptions.Value;
+        _rsaKeyProvider = rsaKeyProvider;
     }
 
     public Task<JwksResponse> GetJwksAsync(CancellationToken cancellationToken)
     {
-        using var rsa = RsaKeyLoader.LoadPublicKey();
-        var parameters = rsa.ExportParameters(false);
-
-        var keyId = _jwtSettings.KeyId;
-        if (string.IsNullOrWhiteSpace(keyId))
-        {
-            throw new InvalidOperationException("Jwt:KeyId is required.");
-        }
+        var parameters = _rsaKeyProvider.GetPublicKey().ExportParameters(false);
+        var keyId = _rsaKeyProvider.GetKeyId();
 
         var jwk = new JwksKey(
             "RSA",

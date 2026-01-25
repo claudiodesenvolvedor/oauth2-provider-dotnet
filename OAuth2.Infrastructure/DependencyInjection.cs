@@ -35,13 +35,14 @@ public static class DependencyInjection
         services.AddScoped<IMongoDbContext, MongoDbContext>();
         services.AddScoped<IMongoCollectionProvider, MongoCollectionProvider>();
 
-        services.AddScoped<IAuthorizationCodeStore, AuthorizationCodeStore>();
+        services.AddSingleton<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
         services.AddScoped<IScopeProvider, ScopeProvider>();
         services.AddScoped<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 
+        services.AddSingleton<IRsaKeyProvider, RsaKeyProvider>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();
         services.AddScoped<ITokenService, JwtTokenService>();
-        services.AddScoped<IJwtKeyProvider, JwtKeyProvider>();
+        services.AddSingleton<IJwtKeyProvider, JwtKeyProvider>();
         services.AddScoped<IClientSecretGenerator, ClientSecretGenerator>();
         services.AddScoped<IUserPasswordPolicy, UserPasswordPolicy>();
         services.AddScoped<IClientIdGenerator, ClientIdGenerator>();
