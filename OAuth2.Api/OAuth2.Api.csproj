@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.23" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.23" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OAuth2.Presentation\OAuth2.Presentation.csproj" />
+    <ProjectReference Include="..\OAuth2.Application\OAuth2.Application.csproj" />
+    <ProjectReference Include="..\OAuth2.Infrastructure\OAuth2.Infrastructure.csproj" />
+    <ProjectReference Include="..\OAuth2.Domain\OAuth2.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
