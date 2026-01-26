@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using OAuth2.Application.Authorization;
 using OAuth2.Application.DTOs.Auth;
 using OAuth2.Application.Interfaces.Auth;
@@ -52,6 +53,16 @@ public sealed class AuthorizationCodeService : IAuthorizationCodeService
             throw new InvalidOperationException("Invalid response_type.");
         }
 
+        if (string.IsNullOrWhiteSpace(request.CodeChallenge))
+        {
+            throw new InvalidOperationException("Missing code_challenge.");
+        }
+
+        if (!string.Equals(request.CodeChallengeMethod, "S256", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Invalid code_challenge_method.");
+        }
+
         var client = await _clientStore.GetByClientIdAsync(request.ClientId, cancellationToken);
         if (client is null)
         {
@@ -74,12 +85,17 @@ public sealed class AuthorizationCodeService : IAuthorizationCodeService
         var code = Guid.NewGuid().ToString("N");
         var expiresAt = DateTimeOffset.UtcNow.AddMinutes(AuthorizationCodeMinutes);
 
+        var codeChallenge = request.CodeChallenge!;
+        var codeChallengeMethod = request.CodeChallengeMethod!;
+
         var authorizationCode = new AuthorizationCode(
             code,
             client.ClientId,
             client.ClientId,
             effectiveScopes,
             request.RedirectUri,
+            codeChallenge,
+            codeChallengeMethod,
             expiresAt);
 
         await _codeStore.StoreAsync(authorizationCode, cancellationToken);
@@ -128,6 +144,22 @@ public sealed class AuthorizationCodeService : IAuthorizationCodeService
             throw new InvalidOperationException("Invalid redirect_uri.");
         }
 
+        if (string.IsNullOrWhiteSpace(request.CodeVerifier))
+        {
+            throw new InvalidOperationException("Missing code_verifier.");
+        }
+
+        if (!string.Equals(code.CodeChallengeMethod, "S256", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Invalid code_challenge_method.");
+        }
+
+        var expectedChallenge = ComputeCodeChallenge(request.CodeVerifier);
+        if (!string.Equals(expectedChallenge, code.CodeChallenge, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Invalid code_verifier.");
+        }
+
         await _codeStore.InvalidateAsync(request.Code, cancellationToken);
 
         var expiresAt = DateTimeOffset.UtcNow.AddMinutes(_tokenLifetimeProvider.GetAccessTokenMinutes());
@@ -161,5 +193,20 @@ public sealed class AuthorizationCodeService : IAuthorizationCodeService
             .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static string ComputeCodeChallenge(string codeVerifier)
+    {
+        var bytes = System.Text.Encoding.ASCII.GetBytes(codeVerifier);
+        var hash = SHA256.HashData(bytes);
+        return Base64UrlEncode(hash);
+    }
+
+    private static string Base64UrlEncode(byte[] data)
+    {
+        return Convert.ToBase64String(data)
+            .TrimEnd('=')
+            .Replace('+', '-')
+            .Replace('/', '_');
     }
 }

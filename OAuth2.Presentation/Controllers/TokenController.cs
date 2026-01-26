@@ -39,6 +39,7 @@ public sealed class TokenController : ControllerBase
             var code = ResolveOptionalValue(request.Code, "code");
             var redirectUri = ResolveOptionalValue(request.RedirectUri, "redirect_uri");
         var refreshToken = ResolveOptionalValue(request.RefreshToken, "refresh_token");
+        var codeVerifier = ResolveOptionalValue(request.CodeVerifier, "code_verifier");
 
             if (grantType == "client_credentials")
             {
@@ -65,7 +66,8 @@ public sealed class TokenController : ControllerBase
                     clientId,
                     clientSecret,
                     code ?? string.Empty,
-                    redirectUri ?? string.Empty);
+                    redirectUri ?? string.Empty,
+                    codeVerifier ?? string.Empty);
 
                 var response = await _authorizationCodeService
                     .ExchangeTokenAsync(authCodeRequest, cancellationToken);

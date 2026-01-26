@@ -14,6 +14,8 @@ public static class AuthorizationCodeMapper
             Subject = code.Subject,
             RedirectUri = code.RedirectUri,
             Scopes = code.Scopes,
+            CodeChallenge = code.CodeChallenge,
+            CodeChallengeMethod = code.CodeChallengeMethod,
             ExpiresAt = code.ExpiresAt
         };
     }
@@ -26,6 +28,8 @@ public static class AuthorizationCodeMapper
             document.Subject,
             document.Scopes,
             document.RedirectUri,
+            document.CodeChallenge,
+            document.CodeChallengeMethod,
             document.ExpiresAt);
     }
 }

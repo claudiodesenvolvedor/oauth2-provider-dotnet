@@ -4,4 +4,5 @@ public sealed record AuthorizationCodeTokenRequest(
     string ClientId,
     string ClientSecret,
     string Code,
-    string RedirectUri);
+    string RedirectUri,
+    string CodeVerifier);

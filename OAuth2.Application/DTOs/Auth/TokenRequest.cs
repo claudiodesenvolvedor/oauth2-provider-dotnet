@@ -7,4 +7,5 @@ public sealed record TokenRequest(
     string? Scope,
     string? Code,
     string? RedirectUri,
-    string? RefreshToken);
+    string? RefreshToken,
+    string? CodeVerifier);

@@ -6,4 +6,6 @@ public sealed record AuthorizationCode(
     string Subject,
     IReadOnlyList<string> Scopes,
     string? RedirectUri,
+    string CodeChallenge,
+    string CodeChallengeMethod,
     DateTimeOffset ExpiresAt);

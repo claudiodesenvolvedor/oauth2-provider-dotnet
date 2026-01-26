@@ -22,6 +22,8 @@ public sealed class AuthorizeController : ControllerBase
         [FromQuery(Name = "redirect_uri")] string redirectUri,
         [FromQuery(Name = "scope")] string? scope,
         [FromQuery(Name = "state")] string? state,
+        [FromQuery(Name = "code_challenge")] string? codeChallenge,
+        [FromQuery(Name = "code_challenge_method")] string? codeChallengeMethod,
         CancellationToken cancellationToken)
     {
         var request = new AuthorizationCodeRequest(
@@ -29,7 +31,9 @@ public sealed class AuthorizeController : ControllerBase
             redirectUri,
             "code",
             scope,
-            state);
+            state,
+            codeChallenge,
+            codeChallengeMethod);
 
         var response = await _authorizationCodeService
             .CreateCodeAsync(request, cancellationToken);

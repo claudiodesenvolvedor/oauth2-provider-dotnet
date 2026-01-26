@@ -5,4 +5,6 @@ public sealed record AuthorizationCodeRequest(
     string RedirectUri,
     string ResponseType,
     string? Scope,
-    string? State);
+    string? State,
+    string? CodeChallenge,
+    string? CodeChallengeMethod);
