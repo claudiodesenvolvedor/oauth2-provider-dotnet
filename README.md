@@ -85,3 +85,12 @@ O build do Vite gera os arquivos estaticos em `OAuth2.Web/wwwroot`.
 ## 14) Partner / autoria
 Partner:
 - Claudio Carvalho
+
+## Documentacao
+- [Manual do Provedor OAuth2](docs/Manual_OAuth2Provider.md) — guia operacional para admins e devs internos
+- [Arquitetura](docs/Architecture.md) — visao geral da arquitetura e padroes do sistema
+- [API Endpoints](docs/ApiEndpoints.md) — lista completa de endpoints e exemplos
+- [Uso com Postman](docs/PostmanUsage.md) — instrucoes para testar os endpoints via Postman
+- [Exemplos de API](docs/ApiUsageExamples.md) — exemplos curl para os principais endpoints
+- [Guia rapido de Postman](docs/PostmanQuickStart.md) — configuracao rapida de ambiente para testes
+- [Troubleshooting](docs/Troubleshooting.md) — problemas comuns e solucoes
