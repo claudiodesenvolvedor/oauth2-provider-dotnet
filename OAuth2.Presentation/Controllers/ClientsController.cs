@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OAuth2.Application.DTOs.Clients;
 using OAuth2.Application.Interfaces.Services;
@@ -6,6 +7,7 @@ namespace OAuth2.Presentation.Controllers;
 
 [ApiController]
 [Route("clients")]
+[Authorize(Policy = "admin")]
 public sealed class ClientsController : ControllerBase
 {
     private readonly IClientService _clientService;

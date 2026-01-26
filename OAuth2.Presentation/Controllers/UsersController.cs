@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OAuth2.Application.DTOs.Users;
 using OAuth2.Application.Interfaces.Services;
@@ -6,6 +7,7 @@ namespace OAuth2.Presentation.Controllers;
 
 [ApiController]
 [Route("users")]
+[Authorize(Policy = "admin")]
 public sealed class UsersController : ControllerBase
 {
     private readonly IUserService _userService;

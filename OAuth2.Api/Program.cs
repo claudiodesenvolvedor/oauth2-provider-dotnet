@@ -14,7 +14,22 @@ builder.Services.AddPresentation();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer();
 builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, JwtBearerOptionsSetup>();
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("admin", policy =>
+        policy.RequireAssertion(context =>
+        {
+            var scope = context.User.FindFirst("scope")?.Value;
+            if (string.IsNullOrWhiteSpace(scope))
+            {
+                return false;
+            }
+
+            return scope
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Any(s => string.Equals(s, "admin", StringComparison.Ordinal));
+        }));
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
