@@ -1,36 +1,88 @@
-# OAuth2 Authorization Server (Interno)
+# OAuth2 Provider
 
-## Chaves RSA e JWKS (RS256)
+## 1) Visao geral do projeto
+Authorization Server interno para microsservicos, responsavel por emitir tokens JWT para consumo entre servicos e por administracao de clients/usuarios via API.
 
-### Gerar par de chaves RSA
+## 2) Linguagens e tecnologias
+- Backend: C# (.NET 8)
+- Frontend: React + TypeScript + Vite
+- Banco: MongoDB
+- Autenticacao: OAuth2 + JWT (RS256 + JWKS)
 
-Utilize o script PowerShell fornecido para gerar um par de chaves privada/pública fora do repositório:
+## 3) Frameworks e bibliotecas principais
+- ASP.NET Core
+- MongoDB.Driver
+- System.IdentityModel.Tokens.Jwt
+- BCrypt.Net
+- React Router
+- Vite
 
-```
-.\tools\generate-rsa-keys.ps1 -OutputDir "C:\keys\oauth2"
-```
+## 4) Metodologia / Arquitetura
+- Clean Architecture
+- Separacao em Domain / Application / Infrastructure / Presentation / Api / Web
+- Frontend desacoplado via API
+- JWT assinado com RSA (RS256)
+- Testes de integracao
 
-O script criará os arquivos `private.pem` e `public.pem` no diretório especificado e retornará um valor de `kid`.
+## 5) Segurança
+- JWT assinado com RSA (RS256).
+- Chaves privadas nunca são versionadas no repositório.
+- Chaves públicas expostas via JWKS para validação externa (`/.well-known/jwks.json`).
+- Secrets e credenciais configurados exclusivamente via variáveis de ambiente.
+- Senhas armazenadas utilizando BCrypt.
+- Endpoints administrativos protegidos por policy (`scope=admin`).
+- Refresh tokens com rotação automática.
+- PKCE implementado no Authorization Code Flow.
+- Separação entre tokens administrativos e tokens OAuth.
 
-### Configurar armazenamento das chaves (sem segredos no repositório)
+## 6) Design Patterns
+- Clean Architecture (Domain / Application / Infrastructure / Presentation / Api / Web).
+- Dependency Injection (ASP.NET Core container).
+- Repository Pattern (persistência MongoDB).
+- Provider / Factory (JWT, RSA, MongoDB).
+- Strategy Pattern (OAuth flows: Client Credentials, Authorization Code + PKCE, Refresh Token).
+- Singleton (RsaKeyProvider).
+- Adapter Pattern (mapeamento Domain ⇄ MongoDB Documents).
 
-Defina uma das opções abaixo:
+## 7) Estrutura da solucao
+- OAuth2.Api
+- OAuth2.Application
+- OAuth2.Domain
+- OAuth2.Infrastructure
+- OAuth2.Presentation
+- OAuth2.Web
 
-**Via caminho de arquivo:**
-  - `JWT_PRIVATE_KEY_PATH`
-  - `JWT_PUBLIC_KEY_PATH`
-- Strings PEM (recomendado apenas com secret manager):
-  - `JWT_PRIVATE_KEY_PEM`
-  - `JWT_PUBLIC_KEY_PEM`
+## 8) Como rodar localmente
+Backend:
+- Mongo rodando em `mongodb://localhost:27017`
+- `dotnet run` (projeto `OAuth2.Api`)
 
-### Configurações obrigatórias (JwtSettings)
+Frontend:
+- `npm install` (em `OAuth2.Web`)
+- `npm run dev`
 
-As seguintes configurações são obrigatórias:
+## 9) Variaveis de ambiente
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+- `JWT_PRIVATE_KEY_PATH`
+- `JWT_PUBLIC_KEY_PATH`
 
-- `Jwt:Issuer`
-- `Jwt:Audience`
-- `Jwt:AccessTokenMinutes`
-- `Jwt:KeyId` (deve corresponder ao `kid` publicado no JWKS)
+## 10) JWT RS256 + JWKS
+Tokens sao assinados com RSA (RS256). A chave publica e exposta via JWKS para validacao por APIs internas.
+- Endpoint: `/.well-known/jwks.json`
 
-⚠️ Nunca armazene chaves privadas ou públicas neste repositório.
+## 11) Flows suportados
+- Client Credentials
+- Authorization Code + PKCE
+- Refresh Token
 
+## 12) Testes
+- `dotnet test`
+
+## 13) Build frontend
+O build do Vite gera os arquivos estaticos em `OAuth2.Web/wwwroot`.
+
+## 14) Partner / autoria
+Partner:
+- Claudio Carvalho
+- Equipe interna de desenvolvimento
