@@ -35,6 +35,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+await app.SeedAdminUserAsync();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

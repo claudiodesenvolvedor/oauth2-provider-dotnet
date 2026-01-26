@@ -15,6 +15,13 @@ public sealed class MongoUserStore : IUserStore
         _users = context.Collections.GetCollection<UserDocument>(CollectionName);
     }
 
+    public Task<bool> AnyAsync(CancellationToken cancellationToken)
+    {
+        return _users.Find(FilterDefinition<UserDocument>.Empty)
+            .Limit(1)
+            .AnyAsync(cancellationToken);
+    }
+
     public async Task<UserRecord?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(email))
