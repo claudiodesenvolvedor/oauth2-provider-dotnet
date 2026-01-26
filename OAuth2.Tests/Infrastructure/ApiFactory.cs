@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using OAuth2.Application.Interfaces.Auth;
 using OAuth2.Application.Authorization;
 using OAuth2.Infrastructure.Auth;
@@ -43,6 +45,13 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = "Test";
+                    options.DefaultChallengeScheme = "Test";
+                })
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", _ => { });
+
             var descriptor = services
                 .SingleOrDefault(d => d.ServiceType == typeof(IClientStore));
 
@@ -52,6 +61,20 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
             }
 
             services.AddScoped<IClientStore, InMemoryClientStore>();
+
+            var userDescriptor = services
+                .SingleOrDefault(d => d.ServiceType == typeof(IUserStore));
+
+            if (userDescriptor is not null)
+            {
+                services.Remove(userDescriptor);
+            }
+
+            var userStore = new InMemoryUserStore();
+            userStore.CreateAsync("admin@local", "Admin123!", CancellationToken.None)
+                .GetAwaiter()
+                .GetResult();
+            services.AddSingleton<IUserStore>(userStore);
 
             var codeDescriptor = services
                 .SingleOrDefault(d => d.ServiceType == typeof(IAuthorizationCodeStore));

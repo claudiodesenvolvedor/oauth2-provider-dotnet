@@ -19,7 +19,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("admin", policy =>
         policy.RequireAssertion(context =>
         {
-            var scope = context.User.FindFirst("scope")?.Value;
+            var scope = context.User.FindFirst("scope")?.Value
+                ?? context.User.FindFirst("http://schemas.microsoft.com/identity/claims/scope")?.Value;
             if (string.IsNullOrWhiteSpace(scope))
             {
                 return false;

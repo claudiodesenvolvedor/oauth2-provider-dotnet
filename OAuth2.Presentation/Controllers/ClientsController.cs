@@ -21,7 +21,7 @@ public sealed class ClientsController : ControllerBase
     [ProducesResponseType(typeof(IReadOnlyList<ClientResponse>), StatusCodes.Status200OK)]
     public Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+        return Task.FromResult<IActionResult>(Ok(Array.Empty<ClientResponse>()));
     }
 
     [HttpGet("{clientId}")]
