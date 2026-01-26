@@ -85,4 +85,3 @@ O build do Vite gera os arquivos estaticos em `OAuth2.Web/wwwroot`.
 ## 14) Partner / autoria
 Partner:
 - Claudio Carvalho
-- Equipe interna de desenvolvimento
