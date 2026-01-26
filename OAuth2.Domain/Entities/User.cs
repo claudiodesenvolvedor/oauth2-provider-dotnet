@@ -7,5 +7,6 @@ public sealed class User
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
     public IReadOnlyList<string> Roles { get; set; } = Array.Empty<string>();
+    public bool IsActive { get; set; } = true;
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
 }

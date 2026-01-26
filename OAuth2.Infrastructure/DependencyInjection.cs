@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenRepository, TokenRepository>();
 
         services.AddScoped<IClientStore, MongoClientStore>();
+        services.AddScoped<IUserStore, MongoUserStore>();
 
         services.AddSingleton<IMongoDatabaseProvider, MongoDatabaseProvider>();
         services.AddScoped<IMongoDbContext, MongoDbContext>();
