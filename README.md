@@ -94,3 +94,4 @@ Partner:
 - [Exemplos de API](docs/ApiUsageExamples.md) — exemplos curl para os principais endpoints
 - [Guia rapido de Postman](docs/PostmanQuickStart.md) — configuracao rapida de ambiente para testes
 - [Troubleshooting](docs/Troubleshooting.md) — problemas comuns e solucoes
+
