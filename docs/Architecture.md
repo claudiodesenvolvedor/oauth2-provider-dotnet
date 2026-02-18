@@ -1,7 +1,20 @@
 # Architecture - OAuth2 Provider
 
-## Visao geral da arquitetura
+## Visão geral da arquitetura
 O projeto implementa um Authorization Server interno seguindo Clean Architecture. O backend e organizado em camadas com dependencias sempre apontando para o centro (Domain e Application). O frontend e uma SPA React desacoplada, consumindo a API via HTTP.
+
+## Frontend (OAuth2.Web)
+
+O projeto OAuth2.Web (React + Vite + TypeScript) **não faz parte da solution .NET por design**.
+
+Motivos:
+- O frontend não é compilado pelo MSBuild
+- Evita incompatibilidade com versões do Visual Studio
+- Permite uso de ferramentas próprias (Node, npm, Vite)
+- Backend permanece enxuto e focado na API
+
+O frontend é desenvolvido e executado de forma independente, consumindo a API via HTTP.
+
 
 ```
 OAuth2.Web (React) -> OAuth2.Api (host) -> Presentation -> Application -> Domain
@@ -35,8 +48,8 @@ Regras principais:
 
 ## JWT + PKCE + Refresh Token no contexto da arquitetura
 - **JWT** e geracao RS256 ficam na Infrastructure (`JwtTokenService`) e sao usados por servicos na Application.
-- **PKCE** e validacao do `code_verifier` ficam na Application (`AuthorizationCodeService`).
-- **Refresh Token** segue o mesmo padrao: armazenamento via `IRefreshTokenStore` (Application) com implementacao Mongo na Infrastructure.
+- **PKCE** e validação do `code_verifier` ficam na Application (`AuthorizationCodeService`).
+- **Refresh Token** segue o mesmo padrão: armazenamento via `IRefreshTokenStore` (Application) com implementação Mongo na Infrastructure.
 
 Exemplo (fluxo de troca de code):
 ```

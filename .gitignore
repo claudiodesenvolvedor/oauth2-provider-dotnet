@@ -1,7 +1,10 @@
 bin/
 obj/
 .vs/
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+UpgradeLog.htm
+
 
 node_modules/
 dist/
